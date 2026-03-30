@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AstroMirror | Зеркало твоей души</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="stars" id="stars"></div>
+
+    <div class="container">
+        <header class="header">
+            <div class="logo" onclick="location.href='#'">
+                <span>Astro</span>Mirror
+            </div>
+            <nav class="nav">
+                <a href="#natal" class="nav-link" data-section="natal">Натальная карта</a>
+                <a href="#matrix" class="nav-link" data-section="matrix">Матрица судьбы</a>
+                <a href="#tarot" class="nav-link" data-section="tarot">Таро</a>
+                <a href="#question" class="nav-link" data-section="question">Вопрос в колоду</a>
+                <a href="#history" class="nav-link" data-section="history">История</a>
+                <div class="user-menu" id="userMenu">
+                    <span class="user-name" id="userNameDisplay"></span>
+                    <div class="logout-btn" onclick="logout()">Выйти</div>
+                </div>
+            </nav>
+        </header>
+
+        <section class="hero">
+            <h1>Зеркало твоей души</h1>
+            <p>Открой свои истинные пути через звезды, числа и древние символы</p>
+        </section>
+
+        <!-- Секция: Натальная карта -->
+        <section id="natal" class="hall">
+            <h2 class="hall-title"><span>✦</span> Натальная астрология <span>✦</span></h2>
+            <div class="card-grid">
+                <div class="card" onclick="showNatalForm()">
+                    <div class="card-icon">🌙</div>
+                    <h3>Астрологический анализ</h3>
+                    <p>Натальная карта, транзиты и синастрия - полный разбор вашей судьбы</p>
+                    <small>Нажми для расчета →</small>
+                </div>
+            </div>
+            
+            <div id="natalFormContainer" class="birth-form">
+                <h3 style="color: #c0a0ff; margin-bottom: 20px;">Астрологический анализ</h3>
+                
+                <div class="form-group">
+                    <label>Тип расчета</label>
+                    <div class="radio-group" id="calculationType">
+                        <label class="radio-option">
+                            <input type="radio" name="calcType" value="natal" checked> 🌟 Натальная карта
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="calcType" value="transits"> ⭐ Транзиты на сегодня
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="calcType" value="synastry"> 💞 Синастрия (совместимость)
+                        </label>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Ваше имя</label>
+                    <input type="text" id="natalName" placeholder="Введите ваше имя">
+                </div>
+                
+                <div class="form-group">
+                    <label>Дата рождения</label>
+                    <input type="date" id="natalDate">
+                </div>
+                
+                <div class="form-group">
+                    <label>Точное время рождения (для точного асцендента)</label>
+                    <input type="time" id="natalTime">
+                </div>
+                
+                <div class="form-group">
+                    <label>Город рождения</label>
+                    <input type="text" id="natalPlace" placeholder="Например: Москва">
+                </div>
+
+                <div id="partnerFields" style="display: none;">
+                    <h4 style="color: #c0a0ff; margin: 20px 0 10px;">👥 Данные партнера</h4>
+                    
+                    <div class="form-group">
+                        <label>Имя партнера</label>
+                        <input type="text" id="partnerName" placeholder="Введите имя партнера">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Дата рождения партнера</label>
+                        <input type="date" id="partnerDate">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Время рождения партнера</label>
+                        <input type="time" id="partnerTime">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Город рождения партнера</label>
+                        <input type="text" id="partnerPlace" placeholder="Город рождения партнера">
+                    </div>
+                </div>
+
+                <button class="btn" onclick="calculateAstrology()">Получить расчет</button>
+            </div>
+
+            <div id="natalResult" class="result-card">
+                <div class="result-tabs" id="resultTabs">
+                    <span class="result-tab active" onclick="showResultTab('natal')">🌙 Натальная</span>
+                    <span class="result-tab" onclick="showResultTab('transits')">⭐ Транзиты</span>
+                    <span class="result-tab" onclick="showResultTab('synastry')">💞 Синастрия</span>
+                </div>
+                
+                <div id="natalTabContent" style="display: block;"></div>
+                <div id="transitsTabContent" style="display: none;"></div>
+                <div id="synastryTabContent" style="display: none;"></div>
+            </div>
+        </section>
+
+        <!-- Секция: Матрица судьбы -->
+        <section id="matrix" class="hall">
+            <h2 class="hall-title"><span>✦</span> Матрица судьбы <span>✦</span></h2>
+            <div class="card-grid">
+                <div class="card" onclick="showMatrixForm()">
+                    <div class="card-icon">🔮</div>
+                    <h3>Расчет Матрицы</h3>
+                    <p>22 аркана твоей судьбы: предназначение, таланты, кармические задачи</p>
+                    <small>Нажми для расчета →</small>
+                </div>
+            </div>
+            <div id="matrixFormContainer" class="birth-form">
+                <h3 style="margin-bottom: 20px; color: #c0a0ff;">Расчет матрицы судьбы</h3>
+                <div class="form-group">
+                    <label>Ваше имя</label>
+                    <input type="text" id="matrixName" placeholder="Введите имя">
+                </div>
+                <div class="form-group">
+                    <label>Дата рождения</label>
+                    <input type="date" id="matrixDate">
+                </div>
+                <button class="btn" onclick="calculateMatrix()">Рассчитать матрицу</button>
+            </div>
+            <div id="matrixResult" class="result-card"></div>
+        </section>
+
+        <!-- Секция: Таро -->
+        <section id="tarot" class="hall">
+            <h2 class="hall-title"><span>✦</span> Таро <span>✦</span></h2>
+            <div class="card-grid">
+                <div class="card" onclick="getCardOfDay()">
+                    <div class="card-icon">🎴</div>
+                    <h3>Карта дня</h3>
+                    <p>Узнай, что звезды приготовили для тебя сегодня</p>
+                    <small>Можно посмотреть 1 раз в день →</small>
+                </div>
+                <div class="card" onclick="showTarotLibrary()">
+                    <div class="card-icon">📚</div>
+                    <h3>Библиотека Таро</h3>
+                    <p>Значения всех старших арканов</p>
+                    <small>Изучить →</small>
+                </div>
+            </div>
+            <div id="tarotResult" class="result-card"></div>
+        </section>
+
+        <!-- Секция: Вопрос в колоду -->
+        <section id="question" class="hall">
+            <h2 class="hall-title"><span>✦</span> Вопрос в колоду <span>✦</span></h2>
+            
+            <div class="question-input" id="questionInputSection">
+                <textarea id="userQuestion" placeholder="Сформулируйте ваш вопрос... Например: Что меня ждет в любви? Как пройдет собеседование?"></textarea>
+                <div class="question-chips">
+                    <span class="chip" onclick="setQuestion('Что меня ждет в любви в ближайший месяц?')">❤️ Любовь</span>
+                    <span class="chip" onclick="setQuestion('Как пройдет собеседование на новую работу?')">💼 Работа</span>
+                    <span class="chip" onclick="setQuestion('Как наладить отношения с родными?')">👨‍👩‍👧 Семья</span>
+                    <span class="chip" onclick="setQuestion('Что меня ждет в этом месяце?')">📅 Ближайшее будущее</span>
+                </div>
+                <button class="btn" onclick="startMajorArcanaReading()">Спросить колоду</button>
+            </div>
+
+            <div id="threeCardsContainer" style="display: none;">
+                <div class="cards-layout">
+                    <div class="card-slot">
+                        <div class="card-back" id="card1" onclick="revealMajorArcana(1)"></div>
+                        <div class="card-label">Прошлое → Корни</div>
+                        <div class="card-meaning" id="card1Meaning"></div>
+                    </div>
+                    <div class="card-slot">
+                        <div class="card-back" id="card2" onclick="revealMajorArcana(2)"></div>
+                        <div class="card-label">Настоящее → Совет</div>
+                        <div class="card-meaning" id="card2Meaning"></div>
+                    </div>
+                    <div class="card-slot">
+                        <div class="card-back" id="card3" onclick="revealMajorArcana(3)"></div>
+                        <div class="card-label">Будущее → Итог</div>
+                        <div class="card-meaning" id="card3Meaning"></div>
+                    </div>
+                </div>
+                <div id="finalAnswer" style="text-align: center; margin-top: 30px; padding: 20px; background: rgba(192,160,255,0.1); border-radius: 15px;"></div>
+                <button class="btn" style="margin-top: 20px; width: auto; padding: 10px 30px;" onclick="resetMajorArcana()">Задать новый вопрос</button>
+            </div>
+        </section>
+
+        <!-- Секция: История (НОВАЯ) -->
+        <section id="history" class="hall">
+            <h2 class="hall-title"><span>✦</span> История расчетов <span>✦</span></h2>
+            <div class="card-grid">
+                <div class="card" onclick="showHistory()">
+                    <div class="card-icon">📜</div>
+                    <h3>Архив предсказаний</h3>
+                    <p>Все ваши расчеты, карты дня и расклады в одном месте</p>
+                    <small>Нажми для просмотра →</small>
+                </div>
+            </div>
+            <div id="historyContainer" class="result-card" style="display: none;">
+                <div id="historyContent"></div>
+                <button class="btn" style="margin-top: 20px; width: auto; padding: 10px 30px;" onclick="clearHistory()">Очистить историю</button>
+            </div>
+        </section>
+    </div>
+
+    <!-- Модальные окна аутентификации -->
+    <div class="modal" id="registerModal">
+        <div class="modal-content">
+            <span class="modal-close" onclick="closeModal('register')">&times;</span>
+            <h2>✨ Добро пожаловать в AstroMirror ✨</h2>
+            <p>Создайте аккаунт, чтобы открыть все тайны</p>
+            <div class="form-group">
+                <label>Ваше имя</label>
+                <input type="text" id="registerName" placeholder="Как к вам обращаться?">
+            </div>
+            <div class="form-group">
+                <label>Email</label>
+                <input type="email" id="registerEmail" placeholder="example@mail.com">
+            </div>
+            <div class="form-group">
+                <label>Пароль</label>
+                <input type="password" id="registerPassword" placeholder="Не менее 6 символов">
+            </div>
+            <div class="form-group">
+                <label>Подтверждение</label>
+                <input type="password" id="registerConfirmPassword" placeholder="Повторите пароль">
+            </div>
+            <button class="btn" onclick="register()">Начать путешествие</button>
+            <div class="modal-link">
+                Уже есть аккаунт? <span onclick="switchModal('register', 'login')">Войти</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="loginModal">
+        <div class="modal-content">
+            <span class="modal-close" onclick="closeModal('login')">&times;</span>
+            <h2>Вход в AstroMirror</h2>
+            <div class="form-group">
+                <label>Email</label>
+                <input type="email" id="loginEmail" placeholder="Ваш email">
+            </div>
+            <div class="form-group">
+                <label>Пароль</label>
+                <input type="password" id="loginPassword" placeholder="Ваш пароль">
+            </div>
+            <button class="btn" onclick="login()">Войти</button>
+            <div class="modal-link">
+                Нет аккаунта? <span onclick="switchModal('login', 'register')">Создать</span>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/cards-data.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/history.js"></script>
+    <script src="js/main.js"></script>
+    <script src="js/natal.js"></script>
+    <script src="js/matrix.js"></script>
+    <script src="js/tarot.js"></script>
+    <script src="js/question.js"></script>
+</body>
+</html>
