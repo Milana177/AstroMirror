@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AstroMirror - Личный кабинет</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* Стили для спиннера загрузки */
+        .loader {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #7b2cbf;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+            display: none;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        /* Сообщения об ошибках */
+        .error-message {
+            color: #ff4d4d;
+            background-color: rgba(255, 77, 77, 0.1);
+            padding: 10px;
+            border-radius: 5px;
+            text-align: center;
+            margin: 10px 0;
+            display: none;
+        }
+        /* Панель фильтров */
+        .controls-panel {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 15px;
+            border-radius: 8px;
+        }
+        .controls-panel select, .controls-panel button {
+            padding: 8px 12px;
+            border-radius: 5px;
+            border: 1px solid #7b2cbf;
+            background: #1a1a2e;
+            color: #fff;
+            cursor: pointer;
+        }
+        .controls-panel button.active {
+            background: #7b2cbf;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav>
+            <a href="index.html" class="logo">AstroMirror</a>
+            <button id="logoutBtn">Выйти</button>
+        </nav>
+    </header>
+
+    <main class="container">
+        <section class="profile-header">
+            <h1>Добро пожаловать в личный кабинет</h1>
+            <p id="userEmail">Загрузка данных пользователя...</p>
+        </section>
+
+        <!-- Панель управления (Фильтры и Сортировка) -->
+        <section class="controls-panel">
+            <select id="sortDate">
+                <option value="desc">Сначала новые расклады</option>
+                <option value="asc">Сначала старые расклады</option>
+            </select>
+
+            <select id="filterCategory">
+                <option value="all">Все категории</option>
+                <option value="tarot">Только Таро</option>
+                <option value="natal">Натальные карты</option>
+                <option value="matrix">Матрица судьбы</option>
+            </select>
+
+            <button id="filterFavorites">⭐ Только Избранное</button>
+        </section>
+
+        <div id="mainLoader" class="loader"></div>
+        <div id="errorMessage" class="error-message"></div>
+
+        <section class="history-section">
+            <h2>История ваших запросов и раскладов</h2>
+            <div id="historyContainer" class="history-grid">
+            </div>
+        </section>
+    </main>
+
+    <script>
+        const mockHistory = [
+            { id: 1, type: 'tarot', title: 'Расклад на отношения', date: '2026-05-15', description: 'Карты: 2 Пентаклей, 5 Жезлов, Рыцарь Кубков.', favorite: true },
+            { id: 2, type: 'natal', title: 'Расчет Натальной карты', date: '2026-05-10', description: 'Марс в III доме, Луна в Скорпионе.', favorite: false },
+            { id: 3, type: 'matrix', title: 'Матрица Судьбы', date: '2026-05-20', description: 'Главное предназначение и финансовый канал.', favorite: true },
+            { id: 4, type: 'tarot', title: 'Расклад «Карта Дня»', date: '2026-05-01', description: 'Выпал Старший Аркан Маг.', favorite: false }
+        ];
+
+        let currentFilters = {
+            sort: 'desc',
+            category: 'all',
+            onlyFavorites: false
+        };
+
+        document.addEventListener('DOMContentLoaded', () => {
+            // Имитация загрузки данных с сервера
+            loadDashboardData();
+
+            // Навешиваем события на фильтры
+            document.getElementById('sortDate').addEventListener('change', (e) => {
+                currentFilters.sort = e.target.value;
+                renderHistory();
+            });
+
+            document.getElementById('filterCategory').addEventListener('change', (e) => {
+                currentFilters.category = e.target.value;
+                renderHistory();
+            });
+
+            document.getElementById('filterFavorites').addEventListener('click', (e) => {
+                currentFilters.onlyFavorites = !currentFilters.onlyFavorites;
+                e.target.classList.toggle('active', currentFilters.onlyFavorites);
+                renderHistory();
+            });
+
+            document.getElementById('logoutBtn').addEventListener('click', () => {
+                localStorage.removeItem('token');
+                window.location.href = 'index.html';
+            });
+        });
+
+        function loadDashboardData() {
+            const loader = document.getElementById('mainLoader');
+            const errorDiv = document.getElementById('errorMessage');
+            
+            loader.style.display = 'block';
+            errorDiv.style.display = 'none';
+
+            // Имитируем задержку сети 1.5 секунды
+            setTimeout(() => {
+                try {
+                    // Здесь в будущем будет реальный fetch-запрос к бэкенду
+                    document.getElementById('userEmail').textContent = "Пользователь: Студент-Разработчик";
+                    loader.style.display = 'none';
+                    renderHistory();
+                } catch (err) {
+                    loader.style.display = 'none';
+                    errorDiv.textContent = 'Ошибка загрузки данных. Попробуйте позже.';
+                    errorDiv.style.display = 'block';
+                }
+            }, 1500);
+        }
+
+        function renderHistory() {
+            const container = document.getElementById('historyContainer');
+            container.innerHTML = '';
+
+            // 1. Фильтрация
+            let filtered = mockHistory.filter(item => {
+                if (currentFilters.category !== 'all' && item.type !== currentFilters.category) return false;
+                if (currentFilters.onlyFavorites && !item.favorite) return false;
+                return true;
+            });
+
+            // 2. Сортировка
+            filtered.sort((a, b) => {
+                const dateA = new Date(a.date);
+                const dateB = new Date(b.date);
+                return currentFilters.sort === 'desc' ? dateB - dateA : dateA - dateB;
+            });
+
+            // 3. Вывод на экран
+            if (filtered.length === 0) {
+                container.innerHTML = '<p>Ничего не найдено по выбранным фильтрам.</p>';
+                return;
+            }
+
+            filtered.forEach(item => {
+                const card = document.createElement('div');
+                card.className = `history-card ${item.favorite ? 'fav-card' : ''}`;
+                card.innerHTML = `
+                    <h3>${item.title} ${item.favorite ? '⭐' : ''}</h3>
+                    <p><small>Дата: ${item.date}</small></p>
+                    <p>${item.description}</p>
+                `;
+                container.appendChild(card);
+            });
+        }
+    </script>
+</body>
+</html>

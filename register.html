@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8"><title>Регистрация</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container" style="display:flex; justify-content:center; align-items:center; min-height:100vh;">
+        <div class="modal-content" style="max-width:450px; width:100%;">
+            <h2>✨ Регистрация</h2>
+            <div class="form-group"><label>Имя</label><input type="text" id="regName"></div>
+            <div class="form-group"><label>Email</label><input type="email" id="regEmail"></div>
+            <div class="form-group"><label>Пароль</label><input type="password" id="regPass"></div>
+            <button class="btn" onclick="handleRegister()">Создать аккаунт</button>
+            <div class="modal-link"><a href="login.html">Уже есть аккаунт? Войти</a></div>
+        </div>
+    </div>
+    <script>
+        async function handleRegister() {
+            const name = document.getElementById('regName').value;
+            const email = document.getElementById('regEmail').value;
+            const password = document.getElementById('regPass').value;
+            if (!name || !email || password.length < 6) return alert('Заполните поля (пароль от 6 симв.)');
+            try {
+                const res = await fetch('http://localhost:5000/api/auth/register', {
+                    method: 'POST', headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name, email, password })
+                });
+                const data = await res.json();
+                if (!res.ok) throw new Error(data.error);
+                localStorage.setItem('astroToken', data.token);
+                window.location.href = 'profile.html';
+            } catch (err) { alert(err.message); }
+        }
+        if(localStorage.getItem('astroToken')) window.location.href = 'profile.html';
+    </script>
+</body>
+</html>
